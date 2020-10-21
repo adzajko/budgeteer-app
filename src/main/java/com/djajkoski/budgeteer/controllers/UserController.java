@@ -4,6 +4,7 @@ import com.djajkoski.budgeteer.ApiPrefixController;
 import com.djajkoski.budgeteer.models.GenericResponse;
 import com.djajkoski.budgeteer.models.SignUpRequest;
 import com.djajkoski.budgeteer.models.User;
+import com.djajkoski.budgeteer.models.UserResponse;
 import com.djajkoski.budgeteer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,14 +24,25 @@ public class UserController {
   UserRepository userRepository;
 
   @GetMapping("/users/getAll")
-  public ResponseEntity<List<User>> getAllUsers() {
-    return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll());
+  public ResponseEntity<List<UserResponse>> getAllUsers() {
+    List<UserResponse> userResponse = new ArrayList<UserResponse>();
+    User[] userMap = userRepository.findAll().toArray(new User[0]);
+    for (User user : userMap) {
+      UserResponse tempObj = new UserResponse();
+      tempObj.setId(user.getId());
+      tempObj.setUsername(user.getUsername());
+      userResponse.add(tempObj);
+    }
+    return ResponseEntity.status(HttpStatus.OK).body(userResponse);
   }
 
   @GetMapping("/users/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable Long id) {
+  public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
     User foundUser = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User was not found!"));
-    return ResponseEntity.status(HttpStatus.OK).body(foundUser);
+    UserResponse mappedUser = new UserResponse();
+    mappedUser.setId(foundUser.getId());
+    mappedUser.setUsername(foundUser.getUsername());
+    return ResponseEntity.status(HttpStatus.OK).body(mappedUser);
   }
 
   @PostMapping("/users/register")
