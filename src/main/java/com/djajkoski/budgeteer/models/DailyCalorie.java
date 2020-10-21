@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Data
 @Entity
@@ -18,6 +19,9 @@ public class DailyCalorie {
 
   @NotBlank
   private Integer currentConsumedAmount;
+
+  @NotBlank
+  private Date date;
 
 
   public Integer getCaloricBalance() {
